@@ -85,9 +85,9 @@ namespace Lab.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            
+
             ViewBag.AllGender = Enum.GetValues(typeof(Gender)).Cast<Gender>().ToList();
-            
+
             ViewBag.AllBranchs = new List<SelectListItem>
             {
                 new SelectListItem { Text = "IT", Value = "0" },
@@ -101,6 +101,7 @@ namespace Lab.Controllers
         [HttpPost]
         public IActionResult Create(Student student, IFormFile avatarFile)
         {
+            
             if (avatarFile != null && avatarFile.Length > 0)
             {
                 var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/avatars", avatarFile.FileName);
@@ -117,22 +118,32 @@ namespace Lab.Controllers
 
             ModelState.Remove("avatarFile");
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                student.Id = Database.listStudents.Count + 1;
-                Database.listStudents.Add(student);
-                return View("Index", Database.listStudents);
+                Console.WriteLine("ModelState is not valid");
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    Console.WriteLine(error.ErrorMessage); 
+                }
+
+                
+                ViewBag.AllGender = Enum.GetValues(typeof(Gender)).Cast<Gender>().ToList();
+                ViewBag.AllBranchs = new List<SelectListItem>
+        {
+            new SelectListItem { Text = "IT", Value = "0" },
+            new SelectListItem { Text = "BE", Value = "1" },
+            new SelectListItem { Text = "CE", Value = "2" },
+            new SelectListItem { Text = "EE", Value = "3" }
+        };
+
+                return View(student);
             }
-            ViewBag.AllGender = Enum.GetValues(typeof(Gender)).Cast<Gender>().ToList();
-            
-            ViewBag.AllBranchs = new List<SelectListItem>
-            {
-                new SelectListItem { Text = "IT", Value = "0" },
-                new SelectListItem { Text = "BE", Value = "1" },
-                new SelectListItem { Text = "CE", Value = "2" },
-                new SelectListItem { Text = "EE", Value = "3" }
-            };
-            return View(student);
+
+            student.Id = Database.listStudents.Count + 1;
+            Database.listStudents.Add(student);
+            return RedirectToAction("Index");
         }
+
     }
 }
