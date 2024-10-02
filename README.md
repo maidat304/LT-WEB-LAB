@@ -10,3 +10,7 @@
 - @RenderBody(): render view
 - @RenderSection: render section
 - Sử dụng ViewComponent để hiển thị Strongly Typed PartialView
+
+# Lab 3
+
+- Sử dụng các Annotation để thiết lập các chức năng kiểm soát dữ liệu người dùng
